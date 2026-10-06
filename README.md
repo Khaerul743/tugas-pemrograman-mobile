@@ -151,7 +151,7 @@ Ikuti langkah-langkah di bawah ini untuk menginstal dependensi dan menjalankan a
 1. **Buka Terminal / Command Prompt**:
    Masuk ke direktori proyek:
    ```bash
-   cd tugas_1
+   cd tugas-pemrograman-mobile
    ```
 
 2. **Unduh Paket Dependensi**:
