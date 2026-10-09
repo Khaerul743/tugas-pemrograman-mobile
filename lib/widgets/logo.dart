@@ -1,41 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LogoWidget extends StatelessWidget {
-  const LogoWidget({super.key});
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+
+  const LogoWidget({
+    super.key,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'ECOWA',
-          style: TextStyle(
-            fontFamily: 'Kanit',
-            fontSize: 40,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A6556),
-          ),
-        ),
-
-        SvgPicture.asset(
-          'lib/assets/images/runner_green.svg',
-          width: 45,
-          height: 45,
-        ),
-
-        Text(
-          'K',
-          style: TextStyle(
-            fontFamily: 'Kanit',
-            fontSize: 40,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A6556),
-          ),
-        ),
-      ],
+    return Image.asset(
+      'lib/assets/images/full_logo.png',
+      width: width,
+      height: height ?? (width != null ? null : 45),
+      fit: fit,
     );
   }
 }
+

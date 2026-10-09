@@ -34,56 +34,43 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 220,
-              child: Stack(
-                children: [
-                  ClipPath(
-                    clipper: HeaderClipper(),
-                    child: Container(color: const Color(0xFFDCE9E8)),
-                  ),
-
-                  Positioned(
-                    top: 90,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 30),
-                          LogoWidget(),
-                          Text(
-                            "LUPA KATA SANDI",
-                            style: TextStyle(
-                              color: Color(0xFF1A6556),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ],
-                      ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          HeaderClipperWidget(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  LogoWidget(),
+                  SizedBox(height: 6),
+                  Text(
+                    "LUPA KATA SANDI",
+                    style: TextStyle(
+                      color: Color(0xFF1A6556),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+          ),
+          const SizedBox(height: 20),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
                   // VERIFICATION
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   // INFO
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.notifications, size: 28),
-                      const SizedBox(width: 8),
+                    children: const [
+                      Icon(Icons.notifications, size: 28),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
@@ -98,7 +85,7 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 35),
+                  const SizedBox(height: 35),
                   Form(
                     key: _formKey,
                     child: TextFormField(
@@ -116,7 +103,7 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
                           },
                     ),
                   ),
-                  SizedBox(height: 35),
+                  const SizedBox(height: 35),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
@@ -128,11 +115,11 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
                       },
                       child: Text(
                         widget.otherVerificationText,
-                        style: TextStyle(fontSize: 13.7, color: Colors.cyan),
+                        style: const TextStyle(fontSize: 13.7, color: Colors.cyan),
                       ),
                     ),
                   ),
-                  SizedBox(height: 27),
+                  const SizedBox(height: 27),
                   // BUTTON
                   SizedBox(
                     width: double.infinity,
@@ -144,7 +131,7 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF1A6556),
+                        backgroundColor: const Color(0xFF1A6556),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -155,12 +142,12 @@ class _ForpassTemplateState extends State<ForpassTemplate> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

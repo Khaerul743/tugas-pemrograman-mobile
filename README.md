@@ -1,6 +1,13 @@
 # Tugas 1 - Pemrograman Mobile
 ## Aplikasi Autentikasi "Ecowalk"
 
+> [!IMPORTANT]
+> **Kredensial Masuk / Demo Login:**
+> - **Username**: `admin`
+> - **Password**: `12345678`
+>
+> Masukkan username dan password di atas pada halaman login untuk masuk dan diarahkan ke Halaman Profil (`/profile`).
+
 Dokumentasi implementasi aplikasi mobile berbasis Flutter untuk pemenuhan tugas mata kuliah Pemrograman Mobile.
 
 ---
@@ -14,6 +21,7 @@ Dokumentasi implementasi aplikasi mobile berbasis Flutter untuk pemenuhan tugas 
 | **Mata Kuliah** | Pemrograman Mobile |
 | **Tugas** | Tugas 1 - Antarmuka & Validasi Form Autentikasi |
 | **Framework** | Flutter (Dart SDK) |
+| **Kredensial Demo** | Username: `admin` \| Password: `12345678` |
 
 ---
 
@@ -38,8 +46,10 @@ Aplikasi ini mengimplementasikan validasi form interaktif pada setiap halaman fo
 - **Persetujuan Ketentuan (*Checkbox*)**: Wajib dicentang. Jika belum dicentang saat menekan tombol "BUAT AKUN", sistem memunculkan notifikasi peringatan (*SnackBar*).
 
 ### B. Halaman Masuk (`/login`)
+- **Kredensial Demo**: Username: `admin`, Password: `12345678`.
 - **Nama Pengguna**: Wajib diisi (*tidak boleh kosong*).
 - **Kata Sandi**: Wajib diisi, minimal 6 karakter.
+- **Alur Autentikasi**: Jika kombinasi username dan kata sandi sesuai dengan kredensial demo (`admin` / `12345678`), aplikasi akan mengarahkan pengguna ke Halaman Profil (`/profile`). Jika tidak sesuai, akan muncul *SnackBar* peringatan merah.
 - **Fitur Tambahan**: Tombol pintas masuk via Google (*Social Login* UI), tautan ke halaman lupa kata sandi, serta navigasi pendaftaran.
 
 ### C. Halaman Lupa Kata Sandi (`/forpassNoHp` & `/forpassEmail`)

@@ -111,7 +111,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, "/profile");
+                        final username = _usernameController.text.trim();
+                        final password = _passwordController.text;
+
+                        if (username == 'admin' && password == '12345678') {
+                          Navigator.pushNamed(context, "/profile");
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Nama pengguna atau kata sandi salah!'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
                     },
                     child: const Text(

@@ -31,49 +31,35 @@ class _ChangePassPageState extends State<ChangePassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // HEADER
-              SizedBox(
-                height: 220,
-                child: Stack(
-                  children: [
-                    ClipPath(
-                      clipper: HeaderClipper(),
-                      child: Container(color: const Color(0xFFDCE9E8)),
-                    ),
-
-                    Positioned(
-                      top: 90,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            SizedBox(height: 30),
-                            LogoWidget(),
-                            Text(
-                              "LUPA KATA SANDI",
-                              style: TextStyle(
-                                color: Color(0xFF1A6556),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // HEADER
+            HeaderClipperWidget(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    LogoWidget(),
+                    SizedBox(height: 6),
+                    Text(
+                      "LUPA KATA SANDI",
+                      style: TextStyle(
+                        color: Color(0xFF1A6556),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+            ),
+            const SizedBox(height: 20),
 
-              // CONTENT
-              Padding(
+            // CONTENT
+            SafeArea(
+              top: false,
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 9),
                 child: Form(
                   key: _formKey,
@@ -166,8 +152,8 @@ class _ChangePassPageState extends State<ChangePassPage> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

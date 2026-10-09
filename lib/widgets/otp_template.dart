@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tugas_1/widgets/header_clipper.dart';
 import 'package:tugas_1/widgets/logo.dart';
 
-class OtpTemplate extends StatelessWidget {
+class OtpTemplate extends StatefulWidget {
   final String to;
   final String otherVerificationText;
   final String otherVerificationRoute;
@@ -15,68 +16,172 @@ class OtpTemplate extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 220,
-              child: Stack(
-                children: [
-                  ClipPath(
-                    clipper: HeaderClipper(),
-                    child: Container(color: const Color(0xFFDCE9E8)),
-                  ),
+  State<OtpTemplate> createState() => _OtpTemplateState();
+}
 
-                  Positioned(
-                    top: 90,
-                    left: 0,
-                    right: 0,
-                    child: Center(child: LogoWidget()),
-                  ),
-                ],
-              ),
+class _OtpTemplateState extends State<OtpTemplate> {
+  late final List<TextEditingController> _controllers;
+  late final List<FocusNode> _focusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(4, (_) => TextEditingController());
+    _focusNodes = List.generate(
+      4,
+      (index) => FocusNode(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.backspace) {
+            if (_controllers[index].text.isEmpty && index > 0) {
+              _controllers[index - 1].clear();
+              _focusNodes[index - 1].requestFocus();
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onOtpChanged(String value, int index) {
+    // If multiple digits were pasted (e.g. 4-digit OTP)
+    if (value.length >= 4) {
+      final digits = value.replaceAll(RegExp(r'\D'), '');
+      for (int i = 0; i < digits.length && (index + i) < 4; i++) {
+        _controllers[index + i].text = digits[i];
+      }
+      final nextIndex = index + digits.length;
+      if (nextIndex < 4) {
+        _focusNodes[nextIndex].requestFocus();
+      } else {
+        _focusNodes[3].unfocus();
+      }
+      return;
+    }
+
+    // If replacement character was typed into an already filled box
+    if (value.length > 1) {
+      final newChar = value.substring(value.length - 1);
+      _controllers[index].text = newChar;
+      _controllers[index].selection = const TextSelection.collapsed(offset: 1);
+      if (index < 3) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+      }
+      return;
+    }
+
+    // Single digit entered
+    if (value.isNotEmpty) {
+      if (index < 3) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+      }
+    } else {
+      // Digit deleted
+      if (index > 0) {
+        _focusNodes[index - 1].requestFocus();
+      }
+    }
+  }
+
+  Widget _buildOtpBox(int index) {
+    return SizedBox(
+      width: 67,
+      height: 65,
+      child: TextFormField(
+        controller: _controllers[index],
+        focusNode: _focusNodes[index],
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        style: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A6556),
+        ),
+        decoration: InputDecoration(
+          counterText: '',
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF1A6556), width: 2),
+          ),
+        ),
+        onChanged: (value) => _onOtpChanged(value, index),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const HeaderClipperWidget(
+            child: Center(
+              child: LogoWidget(),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
                   // VERIFICATION
                   Row(
-                    children: [
-                      const Icon(Icons.check, size: 20),
-                      const SizedBox(width: 8),
-                      const Text('VERIFIKASI', style: TextStyle(fontSize: 12)),
+                    children: const [
+                      Icon(Icons.check, size: 20),
+                      SizedBox(width: 8),
+                      Text('VERIFIKASI', style: TextStyle(fontSize: 12)),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   // INFO
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(Icons.phone_android, size: 28),
                       const SizedBox(width: 8),
-                      // const Expanded(
-                      //   child: Text(
-                      //     'Periksa dan ketik kode verifikasi '
-                      //     'yang telah dikirimkan ke '
-                      //     '+6212371923719238',
-                      //     style: TextStyle(fontSize: 13.3),
-                      //   ),
-                      // ),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: "Periksa dan ketik kode verifikasi yang telah dikirimkan ke ",
-                            style: TextStyle(
+                            text:
+                                "Periksa dan ketik kode verifikasi yang telah dikirimkan ke ",
+                            style: const TextStyle(
                               fontSize: 13.7,
                               color: Colors.black,
                             ),
                             children: [
                               TextSpan(
-                                text: to,
-                                style: TextStyle(
+                                text: widget.to,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13.7,
                                   color: Colors.black,
@@ -88,11 +193,16 @@ class OtpTemplate extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 35),
+                  const SizedBox(height: 35),
                   // OTP
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [_otpBox(), _otpBox(), _otpBox(), _otpBox()],
+                    children: [
+                      _buildOtpBox(0),
+                      _buildOtpBox(1),
+                      _buildOtpBox(2),
+                      _buildOtpBox(3),
+                    ],
                   ),
 
                   const SizedBox(height: 28),
@@ -104,16 +214,17 @@ class OtpTemplate extends StatelessWidget {
                       onTap: () {
                         Navigator.pushReplacementNamed(
                           context,
-                          otherVerificationRoute,
+                          widget.otherVerificationRoute,
                         );
                       },
                       child: Text(
-                        otherVerificationText,
-                        style: TextStyle(fontSize: 13.7, color: Colors.cyan),
+                        widget.otherVerificationText,
+                        style:
+                            const TextStyle(fontSize: 13.7, color: Colors.cyan),
                       ),
                     ),
                   ),
-                  SizedBox(height: 27),
+                  const SizedBox(height: 27),
                   // BUTTON
                   SizedBox(
                     width: double.infinity,
@@ -121,7 +232,7 @@ class OtpTemplate extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF1A6556),
+                        backgroundColor: const Color(0xFF1A6556),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -132,7 +243,7 @@ class OtpTemplate extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // RESEND
                   GestureDetector(
                     onTap: () {},
@@ -144,25 +255,9 @@ class OtpTemplate extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
-
-Widget _otpBox() {
-  return SizedBox(
-    width: 67,
-    height: 65,
-    child: TextFormField(
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      maxLength: 1,
-      decoration: InputDecoration(
-        counterText: '',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    ),
-  );
 }
