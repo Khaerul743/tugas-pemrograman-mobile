@@ -1,9 +1,45 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tugas_1/pages/empty_placeholder_page.dart';
+import 'package:tugas_1/widgets/logout_dialog.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _username = 'KAYI NYAP NYAP';
+  String? _avatarAssetPath = 'lib/assets/images/kucing.jpg';
+  File? _avatarFile;
+
+  Future<void> _handleEditProfile() async {
+    final result = await Navigator.pushNamed(
+      context,
+      '/editProfile',
+      arguments: {
+        'username': _username,
+        'avatarAssetPath': _avatarAssetPath,
+        'avatarFile': _avatarFile,
+      },
+    );
+
+    if (result != null && result is Map<String, dynamic> && mounted) {
+      setState(() {
+        if (result['username'] != null) {
+          _username = result['username'];
+        }
+        if (result.containsKey('avatarAssetPath')) {
+          _avatarAssetPath = result['avatarAssetPath'];
+        }
+        if (result.containsKey('avatarFile')) {
+          _avatarFile = result['avatarFile'];
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +53,16 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
-            children: const [
-              ProfileHeader(),
-              ProfileMenu(),
-              SizedBox(height: 20),
+            children: [
+              ProfileHeader(
+                username: _username,
+                avatarAssetPath: _avatarAssetPath,
+                avatarFile: _avatarFile,
+              ),
+              ProfileMenu(
+                onEditProfile: _handleEditProfile,
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -31,7 +73,23 @@ class ProfilePage extends StatelessWidget {
 }
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final String username;
+  final String? avatarAssetPath;
+  final File? avatarFile;
+
+  const ProfileHeader({
+    super.key,
+    required this.username,
+    this.avatarAssetPath,
+    this.avatarFile,
+  });
+
+  ImageProvider _getImageProvider() {
+    if (avatarFile != null) {
+      return FileImage(avatarFile!);
+    }
+    return AssetImage(avatarAssetPath ?? 'lib/assets/images/kucing.jpg');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +123,8 @@ class ProfileHeader extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 4),
-                      image: const DecorationImage(
-                        image: AssetImage('lib/assets/images/kucing.jpg'),
+                      image: DecorationImage(
+                        image: _getImageProvider(),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -80,9 +138,10 @@ class ProfileHeader extends StatelessWidget {
         const SizedBox(height: 12),
 
         // USERNAME
-        const Text(
-          'KAYI NYAP NYAP',
-          style: TextStyle(
+        Text(
+          username,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w900,
             color: Colors.black,
@@ -116,19 +175,15 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class ProfileMenu extends StatelessWidget {
-  const ProfileMenu({super.key});
+  final VoidCallback onEditProfile;
 
-  void _navigateTo(BuildContext context, String title) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EmptyPlaceholderPage(title: title),
-      ),
-    );
-  }
+  const ProfileMenu({
+    super.key,
+    required this.onEditProfile,
+  });
 
   void _logout(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+    LogoutDialog.show(context);
   }
 
   @override
@@ -140,27 +195,27 @@ class ProfileMenu extends StatelessWidget {
           ProfileMenuItem(
             icon: Icons.settings_outlined,
             title: 'Pengaturan',
-            onTap: () => _navigateTo(context, 'Pengaturan'),
+            onTap: () => Navigator.pushNamed(context, '/settings'),
           ),
           ProfileMenuItem(
             icon: Icons.edit_outlined,
             title: 'Edit Profil',
-            onTap: () => _navigateTo(context, 'Edit Profil'),
+            onTap: onEditProfile,
           ),
           ProfileMenuItem(
             icon: Icons.lock_outline,
             title: 'Kebijakan Privasi',
-            onTap: () => _navigateTo(context, 'Kebijakan Privasi'),
+            onTap: () => Navigator.pushNamed(context, '/privacyPolicy'),
           ),
           ProfileMenuItem(
             icon: Icons.info_outline,
             title: 'Tentang Kami',
-            onTap: () => _navigateTo(context, 'Tentang Kami'),
+            onTap: () => Navigator.pushNamed(context, '/aboutUs'),
           ),
           ProfileMenuItem(
             icon: Icons.assignment_outlined,
             title: 'Ketentuan Layanan',
-            onTap: () => _navigateTo(context, 'Ketentuan Layanan'),
+            onTap: () => Navigator.pushNamed(context, '/termsOfService'),
           ),
           ProfileMenuItem(
             icon: Icons.logout,

@@ -7,12 +7,16 @@ class OtpTemplate extends StatefulWidget {
   final String to;
   final String otherVerificationText;
   final String otherVerificationRoute;
+  final IconData? infoIcon;
+  final VoidCallback? onVerified;
 
   const OtpTemplate({
     super.key,
     required this.to,
     required this.otherVerificationText,
     required this.otherVerificationRoute,
+    this.infoIcon,
+    this.onVerified,
   });
 
   @override
@@ -167,7 +171,7 @@ class _OtpTemplateState extends State<OtpTemplate> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.phone_android, size: 28),
+                      Icon(widget.infoIcon ?? Icons.phone_android, size: 28),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text.rich(
@@ -207,30 +211,48 @@ class _OtpTemplateState extends State<OtpTemplate> {
 
                   const SizedBox(height: 28),
 
-                  // EMAIL
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          widget.otherVerificationRoute,
-                        );
-                      },
-                      child: Text(
-                        widget.otherVerificationText,
-                        style:
-                            const TextStyle(fontSize: 13.7, color: Colors.cyan),
+                  // EMAIL / PHONE ALTERNATIVE
+                  if (widget.otherVerificationText.isNotEmpty)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.otherVerificationRoute.isNotEmpty) {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              widget.otherVerificationRoute,
+                            );
+                          }
+                        },
+                        child: Text(
+                          widget.otherVerificationText,
+                          style:
+                              const TextStyle(fontSize: 13.7, color: Colors.cyan),
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 27),
                   // BUTTON
                   SizedBox(
                     width: double.infinity,
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final otp = _controllers.map((c) => c.text).join();
+                        if (otp.length < 4) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Silakan masukkan 4 digit kode verifikasi'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        if (widget.onVerified != null) {
+                          widget.onVerified!();
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1A6556),
                         shape: RoundedRectangleBorder(
