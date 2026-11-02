@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                         final password = _passwordController.text;
 
                         if (username == 'admin' && password == '12345678') {
-                          Navigator.pushNamed(context, "/profile");
+                          Navigator.pushReplacementNamed(context, "/home");
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tugas_1/widgets/custom_bottom_navigation.dart';
 import 'package:tugas_1/widgets/logout_dialog.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -62,11 +63,11 @@ class _ProfilePageState extends State<ProfilePage> {
               ProfileMenu(
                 onEditProfile: _handleEditProfile,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
             ],
           ),
         ),
-        bottomNavigationBar: const CustomBottomNavigation(),
+        bottomNavigationBar: const CustomBottomNavigation(currentIndex: 3),
       ),
     );
   }
@@ -94,8 +95,8 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    final greenHeight = topPadding + 75.0;
-    const avatarDiameter = 110.0;
+    final greenHeight = topPadding + 90.0;
+    const avatarDiameter = 136.0;
 
     return Column(
       children: [
@@ -122,7 +123,14 @@ class ProfileHeader extends StatelessWidget {
                     height: avatarDiameter,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
+                      border: Border.all(color: Colors.white, width: 4.5),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x14000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                       image: DecorationImage(
                         image: _getImageProvider(),
                         fit: BoxFit.cover,
@@ -135,17 +143,17 @@ class ProfileHeader extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
         // USERNAME
         Text(
           username,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 23,
             fontWeight: FontWeight.w900,
             color: Colors.black,
-            letterSpacing: 0.5,
+            letterSpacing: 0.8,
           ),
         ),
 
@@ -153,22 +161,22 @@ class ProfileHeader extends StatelessWidget {
 
         // EMAIL BADGE
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4.5),
+          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 6),
           decoration: BoxDecoration(
             color: const Color(0xFF1A6556),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(4.5),
           ),
           child: const Text(
             'kayimail@gmail.com',
             style: TextStyle(
-              fontSize: 11.5,
+              fontSize: 12.5,
               fontWeight: FontWeight.w500,
               color: Colors.white,
             ),
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
       ],
     );
   }
@@ -189,7 +197,7 @@ class ProfileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
           ProfileMenuItem(
@@ -213,7 +221,6 @@ class ProfileMenu extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, '/aboutUs'),
           ),
           ProfileMenuItem(
-            icon: Icons.assignment_outlined,
             title: 'Ketentuan Layanan',
             onTap: () => Navigator.pushNamed(context, '/termsOfService'),
           ),
@@ -230,14 +237,14 @@ class ProfileMenu extends StatelessWidget {
 }
 
 class ProfileMenuItem extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
   final String title;
   final VoidCallback onTap;
   final bool showDivider;
 
   const ProfileMenuItem({
     super.key,
-    required this.icon,
+    this.icon,
     required this.title,
     required this.onTap,
     this.showDivider = true,
@@ -250,24 +257,27 @@ class ProfileMenuItem extends StatelessWidget {
         InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 2.0),
             child: Row(
               children: [
-                Icon(icon, size: 25, color: const Color(0xFF1A1A1A)),
-                const SizedBox(width: 16),
+                if (icon != null)
+                  Icon(icon, size: 28, color: const Color(0xFF1A1A1A))
+                else
+                  const SizedBox(width: 28),
+                const SizedBox(width: 22),
                 Expanded(
                   child: Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w600,
                       color: Color(0xFF1A1A1A),
                     ),
                   ),
                 ),
                 const Icon(
                   Icons.chevron_right,
-                  size: 24,
+                  size: 28,
                   color: Color(0xFF1A1A1A),
                 ),
               ],
@@ -278,123 +288,10 @@ class ProfileMenuItem extends StatelessWidget {
           const Divider(
             height: 1,
             thickness: 1,
-            color: Color(0xFFEEEEEE),
+            color: Color(0xFFE5E5E5),
           ),
       ],
     );
   }
 }
 
-class CustomBottomNavigation extends StatelessWidget {
-  const CustomBottomNavigation({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).padding.bottom;
-    const barHeight = 56.0;
-
-    return Container(
-      color: Colors.transparent,
-      child: SizedBox(
-        height: barHeight + 22 + bottomInset,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomCenter,
-          children: [
-            // Green bottom bar background (covers bottom navigation and safe inset)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: barHeight + bottomInset,
-                color: const Color(0xFF1A6556),
-                padding: EdgeInsets.only(bottom: bottomInset),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _navIcon(Icons.home_outlined),
-                          _navIcon(Icons.verified_user_outlined),
-                          _chatWithHeartIcon(),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(), // Space allocated for floating AKUN button
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Floating AKUN tab button
-            Positioned(
-              right: 18,
-              bottom: bottomInset + 3,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 62,
-                    height: 62,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1A6556),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Color(0xFF1A6556),
-                          size: 26,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'AKUN',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _navIcon(IconData icon) {
-    return Icon(icon, color: Colors.white, size: 24);
-  }
-
-  Widget _chatWithHeartIcon() {
-    return Stack(
-      alignment: Alignment.center,
-      children: const [
-        Icon(Icons.chat_bubble, color: Colors.white, size: 24),
-        Padding(
-          padding: EdgeInsets.only(bottom: 2),
-          child: Icon(Icons.favorite, color: Color(0xFF1A6556), size: 10),
-        ),
-      ],
-    );
-  }
-}

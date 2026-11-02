@@ -7,8 +7,10 @@ class EmailOtpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: OtpTemplate(
         to: "test@gmail.com",
+        infoIcon: Icons.email_outlined,
         otherVerificationText: "Verifikasi menggunakan No. HP",
         otherVerificationRoute: "/verificationWithNoHP",
       ),
