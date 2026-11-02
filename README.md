@@ -71,47 +71,31 @@ Aplikasi ini mengimplementasikan validasi form interaktif pada setiap halaman fo
 
 ---
 
-## 3. Struktur Direktori Proyek
+## 3. Struktur Direktori Proyek (Feature-First Architecture)
 
-Struktur folder proyek diatur secara rapi dan modular untuk memisahkan logika halaman, komponen widget, dan aset:
+Proyek telah direorganisasi menggunakan **Feature-First Architecture** untuk menerapkan prinsip *Separation of Concerns (SoC)* dan mempermudah integrasi API:
 
 ```text
-tugas_1/
-├── android/                        # Konfigurasi native platform Android
-├── ios/                            # Konfigurasi native platform iOS
-├── windows/                        # Konfigurasi native platform Windows desktop
-├── lib/
-│   ├── assets/
-│   │   └── images/                 # Aset grafik, ikon SVG, dan ilustrasi
-│   │       ├── google_logo.svg
-│   │       ├── kucing.jpg
-│   │       ├── runner.svg
-│   │       └── runner_green.svg
-│   │
-│   ├── pages/                      # Seluruh layar antarmuka aplikasi
-│   │   ├── change_pass_page.dart   # Halaman reset/ubah kata sandi
-│   │   ├── email_otp_page.dart     # Halaman input OTP via Email
-│   │   ├── forpass_email_page.dart # Halaman lupa sandi via Email
-│   │   ├── forpass_noHp_page.dart  # Halaman lupa sandi via Nomor HP
-│   │   ├── login_page.dart         # Halaman masuk (Login)
-│   │   ├── noHp_otp_page.dart      # Halaman input OTP via Nomor HP
-│   │   ├── profile_page.dart       # Halaman profil pengguna
-│   │   ├── register_page.dart      # Halaman pendaftaran (Register)
-│   │   └── splash_page.dart        # Halaman splash screen
-│   │
-│   ├── widgets/                    # Komponen UI modular yang dapat digunakan ulang
-│   │   ├── forpass_template.dart   # Template antarmuka lupa kata sandi
-│   │   ├── header_clipper.dart     # Custom clipper lengkungan dekoratif header
-│   │   ├── logo.dart               # Komponen logo aplikasi Ecowalk
-│   │   └── otp_template.dart       # Template input digit verifikasi OTP
-│   │
-│   └── main.dart                   # Titik masuk utama aplikasi & konfigurasi rute
-│
-├── test/                           # Berkas pengujian unit & widget
-├── pubspec.yaml                    # Manajemen paket dependensi dan registrasi aset
-├── analysis_options.yaml           # Konfigurasi aturan linting Flutter
-└── README.md                       # Dokumentasi proyek
+lib/
+├── main.dart                       # Titik masuk utama aplikasi & konfigurasi rute
+├── core/                           # Inti sistem (AppColors, ApiConstants, ApiClient)
+├── features/                       # Modul fitur mandiri (Feature-First)
+│   ├── auth/                       # Modul Autentikasi & Akun
+│   ├── home/                       # Modul Beranda & Penjelajahan Wisata
+│   ├── recommendation/             # Modul Rekomendasi Rute & Transit Berkelanjutan
+│   ├── weather/                    # Modul Pemantauan Cuaca
+│   ├── profile/                    # Modul Profil & Pengaturan Akun
+│   ├── notifications/              # Modul Notifikasi
+│   └── static_pages/               # Modul Halaman Statis & Informasi Hukum
+└── shared/                         # Komponen global (MainNavigationWrapper, CustomBottomNav, Dialogs)
 ```
+
+> [!TIP]
+> **Dokumentasi Lengkap Proyek Tersedia di Direktori `docs/`:**
+> - [**`docs/README.md`**](file:///c:/Users/Pongo/Documents/projects/flutter/tugas_pemrograman_mobile/tugas_1/docs/README.md): Pusat dokumentasi resmi aplikasi Ecowalk.
+> - [**`docs/ARCHITECTURE.md`**](file:///c:/Users/Pongo/Documents/projects/flutter/tugas_pemrograman_mobile/tugas_1/docs/ARCHITECTURE.md): Penjelasan mendalam mengenai struktur arsitektur, modularitas, dan navigasi shell.
+> - [**`docs/FEATURES.md`**](file:///c:/Users/Pongo/Documents/projects/flutter/tugas_pemrograman_mobile/tugas_1/docs/FEATURES.md): Rincian lengkap 7 modul fitur dan 35 rute navigasi.
+> - [**`docs/API_INTEGRATION_GUIDE.md`**](file:///c:/Users/Pongo/Documents/projects/flutter/tugas_pemrograman_mobile/tugas_1/docs/API_INTEGRATION_GUIDE.md): Panduan blueprint integrasi API eksternal (Weather, Transit, Places, Auth).
 
 ---
 
