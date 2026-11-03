@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tugas_1/features/weather/presentation/controllers/weather_controller.dart';
 import 'package:tugas_1/shared/widgets/custom_bottom_navigation.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +19,23 @@ class _HomePageState extends State<HomePage> {
   String _selectedCategory = 'Semua';
   bool _showReviewCard = true;
   int _reviewRating = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WeatherController.instance.fetchWeather();
+  }
+
+  String _formatIndonesianDate(DateTime date) {
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    const months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    final dayName = days[date.weekday - 1];
+    final monthName = months[date.month - 1];
+    return '$dayName, ${date.day} $monthName ${date.year}';
+  }
 
   final List<String> _categories = [
     'Semua',
@@ -217,95 +235,103 @@ class _HomePageState extends State<HomePage> {
 
   // 2. Weather Card
   Widget _buildWeatherCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/weatherDetail'),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF165F50),
-                Color(0xFF3B7467),
-                Color(0xFF6F998F),
-                Color(0xFFBACBC6),
-              ],
-              stops: [0.0, 0.32, 0.65, 1.0],
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1F000000),
-                blurRadius: 10,
-                offset: Offset(0, 4), 
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Left details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Minggu, 16 Febuari 2025',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Klapanunggal, Bogor',
-                      style: TextStyle(
-                        color: Color(0xF2FFFFFF),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      '30°C',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 46,
-                        fontWeight: FontWeight.bold,
-                        height: 1.0,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    SizedBox(height: 14),
-                    Text(
-                      'Cerah Berawan',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return AnimatedBuilder(
+      animation: WeatherController.instance,
+      builder: (context, _) {
+        final weather = WeatherController.instance.weather;
+        final dateStr = _formatIndonesianDate(weather.date);
 
-              // Right weather icon
-              Image.asset(
-                'lib/assets/images/icon awan.png',
-                width: 146,
-                height: 114,
-                fit: BoxFit.contain,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/weatherDetail'),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF165F50),
+                    Color(0xFF3B7467),
+                    Color(0xFF6F998F),
+                    Color(0xFFBACBC6),
+                  ],
+                  stops: [0.0, 0.32, 0.65, 1.0],
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1F000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Left details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dateStr,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          weather.locationName,
+                          style: const TextStyle(
+                            color: Color(0xF2FFFFFF),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          '${weather.current.temperature.round()}°C',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 46,
+                            fontWeight: FontWeight.bold,
+                            height: 1.0,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          weather.current.conditionText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Right weather icon from icon_cuaca
+                  Image.asset(
+                    weather.current.iconPath,
+                    width: 120,
+                    height: 105,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

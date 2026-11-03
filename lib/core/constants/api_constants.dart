@@ -5,9 +5,12 @@ class ApiConstants {
 
   // Base URLs (can be swapped between development & production)
   static const String baseApiUrl = 'https://api.example.com/v1';
-  static const String openWeatherBaseUrl = 'https://api.openweathermap.org/data/2.5';
+  static const String openMeteoBaseUrl = 'https://api.open-meteo.com/v1';
+  static const String openMeteoAirQualityBaseUrl = 'https://air-quality-api.open-meteo.com/v1';
 
-  // API Endpoints Placeholder
+  // API Endpoints
+  static const String forecastEndpoint = '/forecast';
+  static const String airQualityEndpoint = '/air-quality';
   static const String loginEndpoint = '/auth/login';
   static const String registerEndpoint = '/auth/register';
   static const String weatherEndpoint = '/weather';

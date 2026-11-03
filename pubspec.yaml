@@ -36,6 +36,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   image_picker: ^1.2.4
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +72,7 @@ flutter:
   assets:
     - lib/assets/images/
     - lib/assets/images/thumbnail/
+    - lib/assets/images/icon_cuaca/
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

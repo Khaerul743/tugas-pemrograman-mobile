@@ -63,7 +63,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
       context,
       '/routeRecommendation',
       arguments: {
-        'origin': origin.isNotEmpty ? origin : 'KLAPANUNGGAL',
+        'origin': origin.isNotEmpty ? origin : 'Menteng, Jakarta Pusat',
         'destination': dest.isNotEmpty ? dest : 'Trans Studio Cibubur',
       },
     );

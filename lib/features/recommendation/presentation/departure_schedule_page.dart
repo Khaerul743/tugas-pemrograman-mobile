@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
 
 class DepartureSchedulePage extends StatefulWidget {
   const DepartureSchedulePage({super.key});
@@ -80,13 +82,22 @@ class _DepartureSchedulePageState extends State<DepartureSchedulePage> {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // 1. Map View (map_template_2.png)
+              // 1. Map View (Interactive Transjakarta Corridor)
               SizedBox(
                 width: double.infinity,
                 height: 250,
-                child: Image.asset(
-                  'lib/assets/images/map_template_2.png',
-                  fit: BoxFit.cover,
+                child: AppMapView(
+                  initialCenter: const LatLng(-6.1956, 106.8231),
+                  initialZoom: 13.0,
+                  borderRadius: BorderRadius.zero,
+                  routes: [
+                    MapRouteData(
+                      points: MapData.transjakartaCorridorRoute,
+                      color: const Color(0xFF1A6556),
+                      strokeWidth: 5.0,
+                    ),
+                  ],
+                  markers: MapData.transjakartaStops,
                 ),
               ),
 

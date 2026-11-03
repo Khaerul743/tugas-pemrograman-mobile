@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
 
 class RouteRecommendationPage extends StatefulWidget {
   final String? origin;
@@ -95,7 +97,7 @@ class _RouteRecommendationPageState extends State<RouteRecommendationPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final displayOrigin = widget.origin ?? args?['origin'] ?? 'KLAPANUNGGAL';
+    final displayOrigin = widget.origin ?? args?['origin'] ?? 'Menteng, Jakarta Pusat';
     final displayDestination = widget.destination ?? args?['destination'] ?? 'Trans Studio Cibubur';
 
     final currentVehicleList =
@@ -312,10 +314,11 @@ class _RouteRecommendationPageState extends State<RouteRecommendationPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  height: 145,
+                  height: 185,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade300),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x14000000),
@@ -324,12 +327,33 @@ class _RouteRecommendationPageState extends State<RouteRecommendationPage> {
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      'lib/assets/images/map_template.png',
-                      fit: BoxFit.cover,
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      final isMenteng = displayOrigin.toLowerCase().contains('menteng');
+                      final mapCenter = isMenteng
+                          ? const LatLng(-6.1850, 106.8300)
+                          : const LatLng(-6.4150, 106.9250);
+                      final routePoints = isMenteng
+                          ? MapData.mentengToDestinationRoute
+                          : MapData.klapanunggalToCibuburRoute;
+                      final mapMarkers = isMenteng
+                          ? MapData.mentengMarkers
+                          : MapData.klapanunggalToCibuburMarkers;
+
+                      return AppMapView(
+                        initialCenter: mapCenter,
+                        initialZoom: isMenteng ? 12.8 : 11.2,
+                        borderRadius: BorderRadius.circular(14),
+                        routes: [
+                          MapRouteData(
+                            points: routePoints,
+                            color: const Color(0xFF1A6556),
+                            strokeWidth: 4.5,
+                          ),
+                        ],
+                        markers: mapMarkers,
+                      );
+                    },
                   ),
                 ),
               ),

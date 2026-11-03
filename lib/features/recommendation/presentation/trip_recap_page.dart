@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
 
 class TripRecapPage extends StatefulWidget {
   final String? title;
@@ -174,10 +176,11 @@ class _TripRecapPageState extends State<TripRecapPage> {
                     ),
                     const SizedBox(height: 10),
                     Container(
-                      height: 130,
+                      height: 165,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.grey.shade300),
                         boxShadow: const [
                           BoxShadow(
                             color: Color(0x10000000),
@@ -186,12 +189,18 @@ class _TripRecapPageState extends State<TripRecapPage> {
                           ),
                         ],
                       ),
-                      child: ClipRRect(
+                      child: AppMapView(
+                        initialCenter: const LatLng(-6.1550, 106.8300),
+                        initialZoom: 11.8,
                         borderRadius: BorderRadius.circular(14),
-                        child: Image.asset(
-                          'lib/assets/images/map_template.png',
-                          fit: BoxFit.cover,
-                        ),
+                        routes: [
+                          MapRouteData(
+                            points: MapData.mentengToDestinationRoute,
+                            color: const Color(0xFF1A6556),
+                            strokeWidth: 4.5,
+                          ),
+                        ],
+                        markers: MapData.mentengMarkers,
                       ),
                     ),
                   ],

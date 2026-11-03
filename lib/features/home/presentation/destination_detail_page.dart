@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
 
 class DestinationDetailPage extends StatefulWidget {
   final String? title;
@@ -251,7 +252,7 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
                     const SizedBox(height: 22),
 
                     // Section: Lihat Peta
-                    _buildLihatPetaSection(),
+                    _buildLihatPetaSection(displayTitle),
 
                     const SizedBox(height: 24),
                   ],
@@ -501,7 +502,8 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
     );
   }
 
-  Widget _buildLihatPetaSection() {
+  Widget _buildLihatPetaSection(String destinationTitle) {
+    final destinationCoord = MapData.getDestinationCoordinate(destinationTitle);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -522,13 +524,31 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
           ),
         ),
         const SizedBox(height: 10),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.asset(
-            'lib/assets/images/map_template.png',
-            width: double.infinity,
-            height: 175,
-            fit: BoxFit.cover,
+        Container(
+          height: 185,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x10000000),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: AppMapView(
+            initialCenter: destinationCoord,
+            initialZoom: 15.0,
+            borderRadius: BorderRadius.circular(16),
+            markers: [
+              MapMarkerItem(
+                point: destinationCoord,
+                title: destinationTitle,
+                pinColor: const Color(0xFF1A6556),
+                icon: Icons.location_on,
+              ),
+            ],
           ),
         ),
       ],

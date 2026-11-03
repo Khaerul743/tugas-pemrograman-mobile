@@ -4,7 +4,10 @@ import 'package:tugas_1/features/auth/presentation/widgets/otp_template.dart';
 import 'package:tugas_1/features/home/presentation/home_page.dart';
 import 'package:tugas_1/features/recommendation/presentation/recommendation_page.dart';
 import 'package:tugas_1/features/profile/presentation/profile_page.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:tugas_1/shared/widgets/main_navigation_wrapper.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
+import 'package:tugas_1/features/weather/presentation/weather_detail_page.dart';
 
 void main() {
   testWidgets('OtpTemplate auto focuses next box when filled', (WidgetTester tester) async {
@@ -75,5 +78,35 @@ void main() {
     );
     expect(find.byType(MainNavigationWrapper), findsOneWidget);
     expect(find.byType(HomePage), findsOneWidget);
+  });
+
+  testWidgets('AppMapView builds and renders properly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: AppMapView(
+            initialCenter: LatLng(-6.2088, 106.8456),
+            initialZoom: 13.0,
+            markers: [
+              MapMarkerItem(
+                point: LatLng(-6.2088, 106.8456),
+                title: 'Test Location',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(AppMapView), findsOneWidget);
+  });
+
+  testWidgets('WeatherDetailPage builds and renders properly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WeatherDetailPage(),
+      ),
+    );
+    expect(find.byType(WeatherDetailPage), findsOneWidget);
+    expect(find.text('Prakiraan Cuaca'), findsOneWidget);
   });
 }

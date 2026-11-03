@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:tugas_1/shared/widgets/map/map.dart';
 
 class VehicleAnalysisPage extends StatefulWidget {
   final String? vehicleType; // 'ojek_online' | 'transportasi_umum' | 'taxi'
@@ -194,10 +196,11 @@ class _VehicleAnalysisPageState extends State<VehicleAnalysisPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  height: 155,
+                  height: 185,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade300),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x14000000),
@@ -206,12 +209,18 @@ class _VehicleAnalysisPageState extends State<VehicleAnalysisPage> {
                       ),
                     ],
                   ),
-                  child: ClipRRect(
+                  child: AppMapView(
+                    initialCenter: const LatLng(-6.1850, 106.8300),
+                    initialZoom: 12.5,
                     borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      'lib/assets/images/map_template.png',
-                      fit: BoxFit.cover,
-                    ),
+                    routes: [
+                      MapRouteData(
+                        points: MapData.mentengToDestinationRoute,
+                        color: const Color(0xFF1A6556),
+                        strokeWidth: 4.5,
+                      ),
+                    ],
+                    markers: MapData.mentengMarkers,
                   ),
                 ),
               ),
