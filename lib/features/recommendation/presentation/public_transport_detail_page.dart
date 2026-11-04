@@ -42,9 +42,45 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
         widget.title ?? routeArgs?['title'] ?? 'TRANSJAKARTA';
     final displayBadge =
         widget.badge ?? routeArgs?['badge'] ?? 'Rekomendasi';
+    final optionDetails = routeArgs?['details'] as Map<String, dynamic>?;
+    final isPublicOption = optionDetails == null ||
+        optionDetails['type'] == 'transportasi_umum';
     final displayImage = widget.image ??
-        routeArgs?['image'] ??
-        'lib/assets/images/thumbnail-transjakarta.jpg';
+        (optionDetails != null && optionDetails['image'] == null
+            ? null
+            : routeArgs?['image'] as String? ??
+                'lib/assets/images/thumbnail-transjakarta.jpg');
+    final detailIcon = optionDetails?['icon'] as IconData? ?? Icons.directions_car;
+    final detailPrice = optionDetails?['price'] as String? ??
+        'Rp 3.500 (tarif flat TransJakarta)';
+    final detailDuration = optionDetails?['duration'] as String? ??
+        '±60-75 menit (tergantung kondisi lalu lintas dan waktu tunggu)';
+    final departureLocation = optionDetails == null
+        ? 'Perkiraan keberangkatan dari Halte Duri Kepa:'
+        : isPublicOption
+            ? 'Perkiraan keberangkatan layanan $displayTitle:'
+            : 'Kendaraan berangkat dari titik jemput yang dipilih.';
+    final departureTime = optionDetails == null
+        ? 'Pukul 18.00 WIB'
+        : isPublicOption
+            ? 'Jadwal mengikuti operasional layanan'
+            : 'Waktu jemput mengikuti ketersediaan kendaraan';
+    final crowdDescription = 'Kepadatan ${displayTitle.toLowerCase()} dapat berubah mengikuti jam dan kondisi perjalanan.';
+    final routeStep1 = isPublicOption
+        ? 'Menuju halte atau stasiun terdekat untuk menggunakan $displayTitle.'
+        : 'Berangkat menggunakan $displayTitle dari titik jemput.';
+    final routeStep2 = isPublicOption
+        ? 'Ikuti jalur layanan $displayTitle menuju area tujuan.'
+        : 'Lanjutkan perjalanan langsung melalui rute yang dipilih.';
+    final routeStep3 = isPublicOption
+        ? 'Turun di halte atau stasiun terdekat dengan tujuan.'
+        : 'Tiba di tujuan tanpa perlu berganti kendaraan.';
+    final advantages = isPublicOption
+        ? ['Tarif relatif terjangkau', 'Mengurangi ketergantungan pada kendaraan pribadi']
+        : ['Perjalanan langsung tanpa transit', 'Fleksibel mengikuti kebutuhan perjalanan'];
+    final disadvantages = isPublicOption
+        ? ['Waktu tempuh dipengaruhi jadwal dan waktu tunggu', 'Kendaraan dapat padat pada jam sibuk']
+        : ['Waktu tempuh dipengaruhi kondisi lalu lintas', 'Biaya dapat lebih tinggi dibanding transportasi umum'];
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -61,8 +97,8 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
-            'Transportasi Umum',
+          title: Text(
+            isPublicOption ? 'Transportasi Umum' : 'Kendaraan Pribadi',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -83,10 +119,12 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                   SizedBox(
                     width: double.infinity,
                     height: 205,
-                    child: Image.asset(
-                      displayImage,
-                      fit: BoxFit.cover,
-                    ),
+                    child: displayImage == null
+                        ? Container(
+                            color: const Color(0xFFE8F2EF),
+                            child: Icon(detailIcon, size: 88, color: const Color(0xFF1A6556)),
+                          )
+                        : Image.asset(displayImage, fit: BoxFit.cover),
                   ),
                   Positioned(
                     bottom: 12,
@@ -147,8 +185,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                     _buildAccordionCard(
                       index: 0,
                       title: 'Biaya',
-                      expandedBody: const Text(
-                        'Rp 3.500 (tarif flat TransJakarta)',
+                      expandedBody: Text(detailPrice,
                         style: TextStyle(
                           fontSize: 13,
                           fontStyle: FontStyle.italic,
@@ -162,8 +199,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                     _buildAccordionCard(
                       index: 1,
                       title: 'Estimasi',
-                      expandedBody: const Text(
-                        '±60-75 menit (tergantung kondisi lalu lintas\ndan waktu tunggu)',
+                      expandedBody: Text(detailDuration,
                         style: TextStyle(
                           fontSize: 13,
                           fontStyle: FontStyle.italic,
@@ -181,8 +217,8 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                       expandedBody: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Perkiraan keberangkatan dari Halte Duri Kepa:',
+                          Text(
+                            departureLocation,
                             style: TextStyle(
                               fontSize: 13,
                               fontStyle: FontStyle.italic,
@@ -190,8 +226,8 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          const Text(
-                            'Pukul 18.00 WIB',
+                          Text(
+                            departureTime,
                             style: TextStyle(
                               fontSize: 13,
                               fontStyle: FontStyle.italic,
@@ -235,7 +271,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                       index: 3,
                       title: 'Informasi Kepadatan',
                       expandedBody: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           style: TextStyle(
                             fontSize: 13,
                             fontStyle: FontStyle.italic,
@@ -243,7 +279,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                             height: 1.4,
                           ),
                           children: [
-                            TextSpan(text: 'Kepadatan di Halte SSSSS tergolong '),
+                            TextSpan(text: '$crowdDescription\nStatus kepadatan: '),
                             TextSpan(
                               text: 'Rendah/',
                               style: TextStyle(
@@ -278,9 +314,9 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                       title: 'Rute yang dilalui',
                       expandedBody: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            'Dari Kedoya Selatan, naik mikrotrans atau ojek online menuju ke halte Kedoya Green Garden',
+                            routeStep1,
                             style: TextStyle(
                               fontSize: 12.5,
                               color: Colors.black87,
@@ -299,7 +335,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                             ),
                           ),
                           Text(
-                            'Naik Koridor 8 TransJakarta menuju Halte Harmoni',
+                            routeStep2,
                             style: TextStyle(
                               fontSize: 12.5,
                               color: Colors.black87,
@@ -318,7 +354,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                             ),
                           ),
                           Text(
-                            'Transit di Halte Harmoni, lalu naik ke Koridor 1 ke Halte Monas',
+                            routeStep3,
                             style: TextStyle(
                               fontSize: 12.5,
                               color: Colors.black87,
@@ -331,7 +367,11 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                     const SizedBox(height: 12),
 
                     // Item 5: Kelebihan & Kekurangan (Green Background Card)
-                    _buildGreenAccordionCard(index: 5),
+                    _buildGreenAccordionCard(
+                      index: 5,
+                      advantages: advantages,
+                      disadvantages: disadvantages,
+                    ),
                   ],
                 ),
               ),
@@ -408,7 +448,11 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
     );
   }
 
-  Widget _buildGreenAccordionCard({required int index}) {
+  Widget _buildGreenAccordionCard({
+    required int index,
+    required List<String> advantages,
+    required List<String> disadvantages,
+  }) {
     final isExpanded = _expandedIndices.contains(index);
 
     return InkWell(
@@ -435,7 +479,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
               child: isExpanded
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Kelebihan',
                           style: TextStyle(
@@ -446,7 +490,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '• Biaya Terjangkau',
+                          '- ${advantages[0]}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12.5,
@@ -454,7 +498,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                           ),
                         ),
                         Text(
-                          '• Jalur khusus bus mengurangi risiko terjebak macet',
+                          '- ${advantages[1]}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12.5,
@@ -472,7 +516,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '• Perlu transit dan menunggu bus di setiap halte',
+                          '- ${disadvantages[0]}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12.5,
@@ -480,7 +524,7 @@ class _PublicTransportDetailPageState extends State<PublicTransportDetailPage> {
                           ),
                         ),
                         Text(
-                          '• Kepadatan penumpang pada jam sibuk',
+                          '- ${disadvantages[1]}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12.5,

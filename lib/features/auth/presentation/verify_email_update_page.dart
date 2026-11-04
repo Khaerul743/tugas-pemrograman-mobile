@@ -15,6 +15,7 @@ class VerifyEmailUpdatePage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: OtpTemplate(
         to: displayEmail,
+        useCompactOtpBoxes: true,
         infoIcon: Icons.email_outlined,
         otherVerificationText: "Verifikasi menggunakan Nomor Hp",
         otherVerificationRoute: "/changePhone",

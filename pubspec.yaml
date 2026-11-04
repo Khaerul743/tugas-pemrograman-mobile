@@ -73,6 +73,7 @@ flutter:
     - lib/assets/images/
     - lib/assets/images/thumbnail/
     - lib/assets/images/icon_cuaca/
+    - lib/assets/images/icons/
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

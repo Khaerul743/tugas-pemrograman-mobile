@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CameraPage extends StatefulWidget {
@@ -9,152 +8,87 @@ class CameraPage extends StatefulWidget {
   State<CameraPage> createState() => _CameraPageState();
 }
 
-class _CameraPageState extends State<CameraPage> with SingleTickerProviderStateMixin {
-  bool _isFrontCamera = true;
-  bool _isFlashing = false;
+class _CameraPageState extends State<CameraPage> {
   final ImagePicker _picker = ImagePicker();
+  bool _isOpeningCamera = false;
+  String? _errorMessage;
 
-  Future<void> _capturePhoto() async {
-    setState(() {
-      _isFlashing = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 150));
-
-    if (!mounted) return;
-    setState(() {
-      _isFlashing = false;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (!mounted) return;
-
-    // Return the captured photo asset from the camera viewfinder
-    Navigator.pop(context, {
-      'type': 'asset',
-      'path': 'lib/assets/images/camera_avatar.png',
-    });
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openDeviceCamera());
   }
 
   Future<void> _openDeviceCamera() async {
+    if (_isOpeningCamera) return;
+
+    setState(() {
+      _isOpeningCamera = true;
+      _errorMessage = null;
+    });
+
     try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-      if (photo != null && mounted) {
-        Navigator.pop(context, {
-          'type': 'file',
-          'path': photo.path,
-        });
+      final photo = await _picker.pickImage(source: ImageSource.camera);
+      if (!mounted) return;
+
+      if (photo == null) {
+        Navigator.pop(context);
+        return;
       }
-    } catch (e) {
-      // If camera hardware not available (e.g. on Windows without camera support),
-      // capture photo via the on-screen simulated camera
-      _capturePhoto();
+
+      Navigator.pop(context, {'type': 'file', 'path': photo.path});
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isOpeningCamera = false;
+        _errorMessage =
+            'Kamera tidak dapat dibuka. Periksa izin kamera perangkat Anda.';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-      ),
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
         backgroundColor: Colors.black,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Camera Viewfinder Preview Image
-            Image.asset(
-              'lib/assets/images/camera_sample.png',
-              fit: BoxFit.cover,
-            ),
-
-            // Top Control Bar (Back button and Flip camera button)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 12,
-              right: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Back button
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      shape: BoxShape.circle,
+        foregroundColor: Colors.white,
+        title: const Text('Kamera'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: _errorMessage == null
+              ? const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(height: 16),
+                    Text(
+                      'Membuka kamera perangkat...',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                  ],
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.no_photography, color: Colors.white70, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white),
                     ),
-                  ),
-
-                  // Flip Camera Switch Button (as in Image 3)
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isFrontCamera = !_isFrontCamera;
-                      });
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: Colors.black38,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.flip_camera_ios,
-                        color: Colors.white,
-                        size: 26,
-                      ),
+                    const SizedBox(height: 20),
+                    FilledButton.icon(
+                      onPressed: _openDeviceCamera,
+                      icon: const Icon(Icons.camera_alt),
+                      label: const Text('Coba lagi'),
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Bottom Shutter Button (as in Image 3)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: MediaQuery.of(context).padding.bottom + 24,
-              child: Center(
-                child: GestureDetector(
-                  onTap: _capturePhoto,
-                  onLongPress: _openDeviceCamera,
-                  child: Container(
-                    width: 74,
-                    height: 74,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1A6556),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: 34,
-                    ),
-                  ),
+                  ],
                 ),
-              ),
-            ),
-
-            // Flash effect animation overlay
-            if (_isFlashing)
-              Container(
-                color: Colors.white,
-              ),
-          ],
         ),
       ),
     );

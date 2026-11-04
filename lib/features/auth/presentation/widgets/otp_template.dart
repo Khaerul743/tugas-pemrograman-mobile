@@ -9,6 +9,7 @@ class OtpTemplate extends StatefulWidget {
   final String otherVerificationRoute;
   final IconData? infoIcon;
   final VoidCallback? onVerified;
+  final bool useCompactOtpBoxes;
 
   const OtpTemplate({
     super.key,
@@ -17,6 +18,7 @@ class OtpTemplate extends StatefulWidget {
     required this.otherVerificationRoute,
     this.infoIcon,
     this.onVerified,
+    this.useCompactOtpBoxes = false,
   });
 
   @override
@@ -105,22 +107,24 @@ class _OtpTemplateState extends State<OtpTemplate> {
   }
 
   Widget _buildOtpBox(int index) {
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1.0,
-        child: TextFormField(
+    final otpField = TextFormField(
           controller: _controllers[index],
           focusNode: _focusNodes[index],
           textAlign: TextAlign.center,
           textAlignVertical: TextAlignVertical.center,
+          minLines: widget.useCompactOtpBoxes ? null : 1,
+          maxLines: widget.useCompactOtpBoxes ? null : 1,
+          expands: widget.useCompactOtpBoxes,
           keyboardType: TextInputType.number,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
-          style: const TextStyle(
-            fontSize: 26,
+          style: TextStyle(
+            fontSize: widget.useCompactOtpBoxes ? 24 : 26,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1A6556),
+            color: widget.useCompactOtpBoxes
+                ? Colors.black
+                : const Color(0xFF1A6556),
           ),
           decoration: InputDecoration(
             counterText: '',
@@ -128,21 +132,35 @@ class _OtpTemplateState extends State<OtpTemplate> {
             fillColor: const Color(0xFFF9F9F9),
             contentPadding: EdgeInsets.zero,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                widget.useCompactOtpBoxes ? 6 : 16,
+              ),
               borderSide: const BorderSide(color: Color(0xFFD8D8D8), width: 1.4),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                widget.useCompactOtpBoxes ? 6 : 16,
+              ),
               borderSide: const BorderSide(color: Color(0xFFD8D8D8), width: 1.4),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                widget.useCompactOtpBoxes ? 6 : 16,
+              ),
               borderSide: const BorderSide(color: Color(0xFF1A6556), width: 2),
             ),
           ),
           onChanged: (value) => _onOtpChanged(value, index),
-        ),
-      ),
+        );
+
+    if (widget.useCompactOtpBoxes) {
+      return SizedBox.square(
+        dimension: 70,
+        child: SizedBox.expand(child: otpField),
+      );
+    }
+    return Expanded(
+      child: AspectRatio(aspectRatio: 1.0, child: otpField),
     );
   }
 
@@ -225,13 +243,16 @@ class _OtpTemplateState extends State<OtpTemplate> {
                   const SizedBox(height: 38),
                   // OTP
                   Row(
+                    mainAxisAlignment: widget.useCompactOtpBoxes
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.start,
                     children: [
                       _buildOtpBox(0),
-                      const SizedBox(width: 14),
+                      SizedBox(width: widget.useCompactOtpBoxes ? 0 : 14),
                       _buildOtpBox(1),
-                      const SizedBox(width: 14),
+                      SizedBox(width: widget.useCompactOtpBoxes ? 0 : 14),
                       _buildOtpBox(2),
-                      const SizedBox(width: 14),
+                      SizedBox(width: widget.useCompactOtpBoxes ? 0 : 14),
                       _buildOtpBox(3),
                     ],
                   ),

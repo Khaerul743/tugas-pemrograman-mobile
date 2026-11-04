@@ -228,6 +228,7 @@ class ProfileMenu extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, '/aboutUs'),
           ),
           ProfileMenuItem(
+            assetIcon: 'lib/assets/images/icons/icon_ketentuan_layanan.png',
             title: 'Ketentuan Layanan',
             onTap: () => Navigator.pushNamed(context, '/termsOfService'),
           ),
@@ -245,6 +246,7 @@ class ProfileMenu extends StatelessWidget {
 
 class ProfileMenuItem extends StatelessWidget {
   final IconData? icon;
+  final String? assetIcon;
   final String title;
   final VoidCallback onTap;
   final bool showDivider;
@@ -252,6 +254,7 @@ class ProfileMenuItem extends StatelessWidget {
   const ProfileMenuItem({
     super.key,
     this.icon,
+    this.assetIcon,
     required this.title,
     required this.onTap,
     this.showDivider = true,
@@ -267,7 +270,14 @@ class ProfileMenuItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 2.0),
             child: Row(
               children: [
-                if (icon != null)
+                if (assetIcon != null)
+                  Image.asset(
+                    assetIcon!,
+                    width: 28,
+                    height: 28,
+                    fit: BoxFit.contain,
+                  )
+                else if (icon != null)
                   Icon(icon, size: 28, color: const Color(0xFF1A1A1A))
                 else
                   const SizedBox(width: 28),
